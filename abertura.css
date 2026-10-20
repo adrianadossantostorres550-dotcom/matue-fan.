@@ -48,3 +48,12 @@
 .iCtl button{border:1px solid #8a2bff99;border-radius:99px;padding:6px 16px;font-size:.8rem;color:#d9c2ff;background:#0a031899;cursor:pointer}
 .iCtl button:hover{box-shadow:0 0 14px #8a2bff}
 .iCtl button:focus-visible{outline:3px solid #2b7bff;outline-offset:3px}
+
+/* Tela "Toque para entrar" (libera o som do navegador) */
+.iEntrar{position:absolute;z-index:6;left:50%;top:50%;transform:translate(-50%,-50%);padding:16px 34px;border:1px solid #c28cff;border-radius:99px;
+  font-family:"Unbounded",system-ui,sans-serif;font-weight:500;font-size:1rem;letter-spacing:.08em;color:#f3e6ff;cursor:pointer;
+  background:linear-gradient(90deg,#8a2bff55,#ff2bd655);text-shadow:0 0 12px #c77dff;box-shadow:0 0 30px #8a2bff88;animation:iEntra 1.8s ease-in-out infinite alternate}
+.iEntrar[hidden]{display:none}
+.iEntrar:focus-visible{outline:3px solid #2b7bff;outline-offset:4px}
+@keyframes iEntra{to{box-shadow:0 0 60px #c28cff;transform:translate(-50%,-50%) scale(1.05)}}
+#intro.espera .iFog{opacity:.35;transition:opacity 1.2s}

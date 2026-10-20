@@ -1,25 +1,49 @@
-/* Abertura do título: partículas, luz que revela as letras, batida grave (opcional) e tremor.
-   Linha do tempo (ms): 0 escuro e partículas | 600 luz revela o nome | 2450 batida/pulso | 4900 some | 5700 fim. */
+/* Abertura do título: partículas, luz que revela as letras, som grave sintetizado e tremor.
+   Linha do tempo (ms): 0 escuro | 600 luz revela o nome (+ som que sobe) | 2450 batida/pulso | 4900 some | 5700 fim.
+   Som: os navegadores só liberam áudio depois de um toque. Se ainda não liberou, aparece "Toque para entrar". */
 (function(){
   const intro = document.getElementById("intro"); if (!intro) return;
   const cv = document.getElementById("iCv"), c = cv.getContext("2d");
-  const T = { beat: 2450, fim: 4900, fora: 5700 };
-  let som = false, actx = null, raf = 0, t0 = 0, ultimo = 0, timers = [], amb = [], frag = [], W, H, vivo = false;
+  const T = { reveal: 600, beat: 2450, fim: 4900 };
+  let som = true, actx = null, master = null, raf = 0, t0 = 0, ultimo = 0, timers = [], amb = [], frag = [], W, H, vivo = false;
   const espera = ms => new Promise(r => setTimeout(r, ms));
   const marca = () => { try { sessionStorage.setItem("introVista", "1"); } catch (e) {} };
 
+  // ---- Música da abertura (opcional) ----
+  // Coloque o arquivo na MESMA pasta do site. "inicio" = segundo da música em que ela começa a tocar.
+  // Sem o arquivo (ou com erro), o site usa o som sintetizado abaixo.
+  const MUSICA = { arquivo: "abertura.mp3", inicio: 0 };
+  let faixa = null, faixaOk = false;
+  if (MUSICA.arquivo){
+    faixa = new Audio(MUSICA.arquivo); faixa.preload = "auto";
+    faixa.addEventListener("canplay", () => { faixaOk = true; });
+    faixa.addEventListener("error", () => { faixaOk = false; faixa = null; });
+  }
+
+  // ---- Áudio sintetizado (som original, sem arquivo) ----
+  try {
+    actx = new (window.AudioContext || window.webkitAudioContext)();
+    master = actx.createGain(); master.connect(actx.destination);
+  } catch (e) { actx = null; }
+  function subida(){                      // som que sobe junto com a luz
+    if (!som || !actx || faixaOk) return;
+    const t = actx.currentTime, d = (T.beat - T.reveal)/1000, o = actx.createOscillator(), f = actx.createBiquadFilter(), g = actx.createGain();
+    o.type = "sawtooth"; o.frequency.setValueAtTime(55, t); o.frequency.exponentialRampToValueAtTime(220, t + d);
+    f.type = "lowpass"; f.frequency.setValueAtTime(120, t); f.frequency.exponentialRampToValueAtTime(1800, t + d);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.2, t + d); g.gain.exponentialRampToValueAtTime(.0001, t + d + .05);
+    o.connect(f); f.connect(g); g.connect(master); o.start(t); o.stop(t + d + .1);
+  }
+  function baixo(){                       // batida grave
+    if (!som || !actx || faixaOk) return;
+    const t = actx.currentTime, o = actx.createOscillator(), g = actx.createGain();
+    o.type = "sine"; o.frequency.setValueAtTime(95, t); o.frequency.exponentialRampToValueAtTime(36, t + .45);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.95, t + .02); g.gain.exponentialRampToValueAtTime(.0001, t + 1.1);
+    o.connect(g); g.connect(master); o.start(t); o.stop(t + 1.2);
+  }
+
+  // ---- Partículas ----
   function tam(){ W = cv.width = innerWidth; H = cv.height = innerHeight; }
   function cria(){ amb = Array.from({ length: innerWidth < 700 ? 36 : 70 }, () => ({ x: Math.random()*W, y: Math.random()*H, r: Math.random()*2 + .6, vy: -(Math.random()*.35 + .08), vx: (Math.random() - .5)*.15, a: Math.random()*.6 + .3 })); }
-
-  function baixo(){                       // batida grave sintetizada (som original, sem arquivo)
-    if (!som) return;
-    try {
-      const t = actx.currentTime, o = actx.createOscillator(), g = actx.createGain();
-      o.type = "sine"; o.frequency.setValueAtTime(95, t); o.frequency.exponentialRampToValueAtTime(36, t + .45);
-      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.9, t + .02); g.gain.exponentialRampToValueAtTime(.0001, t + .95);
-      o.connect(g).connect(actx.destination); o.start(t); o.stop(t + 1);
-    } catch (e) {}
-  }
   function estoura(){
     intro.classList.add("beat", "full"); baixo();
     for (let i = 0; i < 38; i++){ const a = Math.random()*6.283, v = Math.random()*5 + 1.5;
@@ -44,32 +68,50 @@
     frag = frag.filter(q => q.vida > 0);
     raf = requestAnimationFrame(desenha);
   }
+
+  // ---- Controle ----
   function termina(rapido){
     if (!vivo) return; vivo = false; cancelAnimationFrame(raf); timers.forEach(clearTimeout);
+    if (actx) master.gain.setTargetAtTime(0, actx.currentTime, .08);   // corta o som se pularem
+    if (faixa && !faixa.paused){                                        // música some suavemente
+      const f = faixa; let v = f.volume;
+      const iv = setInterval(() => { v -= .1; if (v <= 0){ clearInterval(iv); f.pause(); f.volume = 1; } else f.volume = v; }, 80);
+    }
     intro.classList.add("fim"); marca();
     setTimeout(() => { intro.style.display = "none"; document.documentElement.style.overflow = ""; }, rapido ? 450 : 800);
   }
   function inicia(){
     timers.forEach(clearTimeout); timers = [];
-    intro.classList.remove("play", "beat", "full", "fim"); void intro.offsetWidth;
+    document.getElementById("iEntrar").hidden = true;
+    intro.classList.remove("play", "beat", "full", "fim", "espera"); void intro.offsetWidth;
     intro.style.display = ""; document.documentElement.style.overflow = "hidden";
+    if (actx) master.gain.setTargetAtTime(1, actx.currentTime, .01);
+    if (faixa && faixaOk){ faixa.currentTime = MUSICA.inicio; faixa.volume = 1; faixa.muted = !som; faixa.play().catch(() => {}); }
     tam(); cria(); frag = []; vivo = true; t0 = ultimo = performance.now();
     intro.classList.add("play"); raf = requestAnimationFrame(desenha);
-    timers.push(setTimeout(estoura, T.beat), setTimeout(() => termina(false), T.fim));
+    timers.push(setTimeout(subida, T.reveal), setTimeout(estoura, T.beat), setTimeout(() => termina(false), T.fim));
   }
+  function aguardaToque(){                // som ainda bloqueado: pede um toque
+    intro.classList.add("espera"); document.documentElement.style.overflow = "hidden";
+    const b = document.getElementById("iEntrar"); b.hidden = false; b.focus();
+    b.onclick = () => { (actx ? actx.resume() : Promise.resolve()).then(inicia, inicia); };
+  }
+
   document.getElementById("iPular").onclick = () => termina(true);
   document.getElementById("iSom").onclick = e => {
     som = !som; e.target.setAttribute("aria-pressed", som); e.target.textContent = "Som: " + (som ? "ligado" : "desligado");
-    if (som){ actx = actx || new (window.AudioContext || window.webkitAudioContext)(); actx.resume(); }
+    if (faixa) faixa.muted = !som;
   };
   document.addEventListener("keydown", e => { if (e.key === "Escape" && vivo) termina(true); });
   addEventListener("resize", () => { if (vivo){ tam(); cria(); } });
   const rever = document.getElementById("rever");
-  if (rever) rever.onclick = () => { window.scrollTo(0, 0); inicia(); };
+  if (rever) rever.onclick = () => { window.scrollTo(0, 0); (actx ? actx.resume() : Promise.resolve()).then(inicia, inicia); };
 
   // Primeira visita da sessão: roda. Efeitos desligados, movimento reduzido ou já visto: pula.
   const pular = (typeof fx !== "undefined" && !fx) || matchMedia("(prefers-reduced-motion: reduce)").matches ||
     document.documentElement.classList.contains("semIntro");
   if (pular){ intro.style.display = "none"; return; }
-  Promise.race([document.fonts ? document.fonts.ready : espera(0), espera(1200)]).then(inicia);
+  Promise.race([document.fonts ? document.fonts.ready : espera(0), espera(1200)]).then(() => {
+    if (!actx || actx.state === "running") inicia(); else aguardaToque();
+  });
 })();
