@@ -83,3 +83,8 @@ dialog li{margin-bottom:6px}dialog li a{color:#fff}
  .bio article{grid-template-columns:1fr;gap:6px}
  summary b{min-width:70px}
 }
+
+/* Imagem principal balançando (gira um pouco para cada lado) */
+.hero-img{perspective:900px}
+.hero-img img{animation:balancar 6s ease-in-out infinite;transform-origin:center}
+@keyframes balancar{0%,100%{transform:rotateY(-18deg)}50%{transform:rotateY(18deg)}}
