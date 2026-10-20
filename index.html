@@ -4,100 +4,85 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MATUÊ – Site de fã</title>
-<meta name="description" content="Site de fã do rapper Matuê: discografia, player e informações sobre o artista.">
+<meta name="description" content="Site de fã do rapper Matuê: biografia, linha do tempo, discografia e links para ouvir no Spotify.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="estilo.css">
 </head>
 <body>
-
-<!-- MENU -->
+<a class="skip" href="#biografia">Pular para o conteúdo</a>
 <header class="top">
   <a class="logo" href="#inicio">MATUÊ</a>
   <button id="menuBtn" class="burger" aria-label="Abrir menu" aria-expanded="false" aria-controls="nav">☰</button>
   <nav id="nav">
-    <a href="#inicio">Início</a>
-    <a href="#discografia">Discografia</a>
-    <a href="#playlist">Playlist</a>
-    <a href="#sobre">Sobre</a>
+    <a href="#inicio">Início</a><a href="#biografia">Biografia</a><a href="#linha">Linha do Tempo</a>
+    <a href="#discografia">Discografia</a><a href="#curiosidades">Curiosidades</a><a href="#fontes">Fontes</a>
     <button id="fxBtn" class="fx" aria-pressed="true">Efeitos: ligados</button>
   </nav>
 </header>
 
 <main>
-<!-- TELA INICIAL -->
 <section id="inicio" class="hero">
   <canvas id="particles" aria-hidden="true"></canvas>
   <div class="fog f1" aria-hidden="true"></div><div class="fog f2" aria-hidden="true"></div>
   <div class="hero-text">
     <h1>MATUÊ</h1>
-    <p>Trap de Fortaleza, graves fundos e luz neon na madrugada.</p>
+    <p>Do reggae de Fortaleza ao topo do trap brasileiro: a história, os discos e os números de Matheus Brasileiro Aguiar.</p>
     <div class="btns">
-      <button class="btn solid" id="listenNow">Ouvir agora</button>
-      <a class="btn" href="#discografia">Explorar discografia</a>
+      <a class="btn solid" href="#biografia">Explorar a história</a>
+      <a class="btn spotify" id="ouvirAgora" href="#" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="currentColor"/><path d="M6 9.5c4-1.2 8-.9 12 1M6.8 12.8c3.3-.9 6.4-.6 9.4.9M7.6 15.8c2.6-.6 5-.4 7.4.7" stroke="#05030b" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg> Ouvir músicas</a>
     </div>
   </div>
-  <div class="hero-img">
-    <img src="assets/img/matue-principal.png" alt="Personagem de cabelo roxo com raios neon caminhando por um cenário urbano com vegetação">
-  </div>
+  <div class="hero-img"><img src="matue-principal.png" width="303" height="660" alt="Personagem de cabelo roxo com raios neon caminhando por um cenário urbano com vegetação"></div>
+  <a class="scroll" href="#biografia" aria-label="Rolar para baixo">⌄</a>
 </section>
 
-<!-- DISCOGRAFIA -->
+<section id="biografia" class="wrap reveal"><h2>Biografia</h2><div id="bio" class="bio"></div></section>
+<section id="linha" class="wrap reveal"><h2>Linha do tempo</h2><div id="timeline" class="timeline"></div></section>
+
 <section id="discografia" class="wrap reveal">
   <h2>Discografia</h2>
+  <div class="filtros">
+    <div role="group" aria-label="Filtrar por tipo" id="filtros"></div>
+    <label class="busca"><span class="sr">Buscar projeto</span><input id="busca" type="search" placeholder="Buscar por título…"></label>
+  </div>
   <div id="albums" class="albums"></div>
+  <p id="vazio" class="note" hidden>Nenhum projeto encontrado.</p>
+  <h3 class="sub">Colaborações</h3>
+  <ul id="colabs" class="colabs"></ul>
 </section>
 
-<!-- PLAYLIST -->
-<section id="playlist" class="wrap reveal">
-  <h2>Playlist</h2>
-  <p class="note">O player toca arquivos de áudio autorizados colocados em <code>assets/audio/</code>. Sem o arquivo, a faixa mostra um aviso.</p>
-  <ol id="tracklist" class="tracklist"></ol>
-</section>
+<section id="curiosidades" class="wrap reveal"><h2>Curiosidades</h2><div id="curios" class="curios"></div></section>
 
-<!-- SOBRE -->
-<section id="sobre" class="wrap reveal about">
-  <h2>Sobre</h2>
-  <p>Matuê é rapper e produtor de Fortaleza, no Ceará, e um dos nomes de destaque do trap brasileiro. Construiu a carreira a partir da internet e fundou o selo 30PRAU.</p>
-  <p>Seu som une batidas de trap, melodias marcantes e uma estética futurista, presente nas capas, nos clipes e nos shows.</p>
+<section id="fontes" class="wrap reveal"><h2>Fontes</h2>
+  <p class="note">Cada informação do site vem de pelo menos uma destas fontes. Onde elas divergem, o texto avisa.</p>
+  <ul id="fontesLista" class="fontes"></ul>
 </section>
 </main>
 
-<!-- RODAPÉ -->
 <footer>
-  <p>Ouça o artista nas plataformas (busca oficial em cada serviço):</p>
-  <p class="links">
-    <a href="https://open.spotify.com/search/Matu%C3%AA" target="_blank" rel="noopener">Spotify</a>
-    <a href="https://www.youtube.com/results?search_query=Matu%C3%AA" target="_blank" rel="noopener">YouTube</a>
-    <a href="https://music.apple.com/br/search?term=Matu%C3%AA" target="_blank" rel="noopener">Apple Music</a>
-    <a href="https://www.deezer.com/search/Matu%C3%AA" target="_blank" rel="noopener">Deezer</a>
-  </p>
-  <p>Site de fã, feito para estudo e diversão. Não é oficial e não tem parceria ou patrocínio do artista.</p>
-  <p>Projeto criado com ajuda do Claude.</p>
+  <p>Ouça no Spotify: <a id="rodapeSpotify" href="#" target="_blank" rel="noopener noreferrer">perfil oficial de Matuê</a></p>
+  <p>Site de fã, projeto independente, sem associação oficial nem patrocínio do artista. A imagem principal é uma referência visual enviada pelo autor do site; confira os direitos de uso antes de divulgar.</p>
 </footer>
 
-<!-- PLAYER FIXO -->
+<dialog id="dlg" aria-labelledby="dlgTitulo">
+  <button id="dlgFechar" class="fechar" aria-label="Fechar">✕</button>
+  <div id="dlgCorpo"></div>
+</dialog>
+
+<!-- PLAYER FIXO (visual: abre o Spotify, não toca áudio no site) -->
 <div class="player" role="region" aria-label="Player de música">
-  <div id="pCover" class="cover">M</div>
-  <div class="info">
-    <strong id="pTitle">Escolha uma faixa</strong>
-    <span id="pArtist">Matuê</span>
-    <span id="msg" class="msg" aria-live="polite"></span>
-  </div>
+  <div id="pCover" class="cover" aria-hidden="true">M</div>
+  <div class="info"><strong id="pTitle">Escolha uma faixa</strong><span id="pArtist">Matuê</span></div>
   <div class="ctrl">
     <button id="prev" aria-label="Faixa anterior">⏮</button>
-    <button id="play" class="big" aria-label="Reproduzir">▶</button>
+    <a id="play" class="big" href="#" target="_blank" rel="noopener noreferrer" aria-label="Abrir a faixa no Spotify">▶</a>
     <button id="next" aria-label="Próxima faixa">⏭</button>
   </div>
-  <div class="bar">
-    <span id="cur">0:00</span>
-    <input id="seek" type="range" min="0" max="100" value="0" step="0.1" aria-label="Progresso">
-    <span id="dur">0:00</span>
-  </div>
-  <div class="vol"><span aria-hidden="true">🔊</span><input id="vol" type="range" min="0" max="1" step="0.01" value="0.8" aria-label="Volume"></div>
-  <div id="viz" class="viz" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+  <button id="listaBtn" class="fx" aria-expanded="false" aria-controls="lista">Playlist</button>
+  <ol id="lista" class="lista" hidden></ol>
 </div>
-
+<script src="dados.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
