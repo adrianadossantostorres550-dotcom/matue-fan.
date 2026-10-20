@@ -8,8 +8,22 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="estilo.css">
+<link rel="stylesheet" href="abertura.css">
+<script>try{if(sessionStorage.getItem("introVista"))document.documentElement.classList.add("semIntro")}catch(e){}</script>
 </head>
 <body>
+<div id="intro" role="region" aria-label="Abertura animada">
+  <canvas id="iCv" aria-hidden="true"></canvas>
+  <div class="iFog a" aria-hidden="true"></div><div class="iFog b" aria-hidden="true"></div>
+  <div class="cam"><div class="shake">
+    <div class="iTitle" role="img" aria-label="MATUÊ">
+      <div class="iReveal" aria-hidden="true"><span class="iExt">MATUÊ</span><span class="iGlow">MATUÊ</span><span class="iFront">MATUÊ</span><span class="iG iG1">MATUÊ</span><span class="iG iG2">MATUÊ</span></div>
+      <i class="iBar" aria-hidden="true"></i>
+    </div>
+  </div></div>
+  <i class="iFlash" aria-hidden="true"></i><i class="iVig" aria-hidden="true"></i>
+  <div class="iCtl"><button id="iSom" aria-pressed="false">Som: desligado</button><button id="iPular">Pular</button></div>
+</div>
 <a class="skip" href="#biografia">Pular para o conteúdo</a>
 <header class="top">
   <a class="logo" href="#inicio">MATUÊ</a>
@@ -62,6 +76,7 @@
 
 <footer>
   <p>Ouça no Spotify: <a id="rodapeSpotify" href="#" target="_blank" rel="noopener noreferrer">perfil oficial de Matuê</a></p>
+  <p><button id="rever" class="fx">Rever abertura</button></p>
   <p>Site de fã, projeto independente, sem associação oficial nem patrocínio do artista. A imagem principal é uma referência visual enviada pelo autor do site; confira os direitos de uso antes de divulgar.</p>
 </footer>
 
@@ -84,5 +99,6 @@
 </div>
 <script src="dados.js"></script>
 <script src="script.js"></script>
+<script src="abertura.js"></script>
 </body>
 </html>
