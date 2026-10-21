@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="estilo.css">
 <link rel="stylesheet" href="abertura.css">
+<link rel="stylesheet" href="ambiente.css">
 <script>try{if(sessionStorage.getItem("introVista"))document.documentElement.classList.add("semIntro")}catch(e){}</script>
 </head>
 <body>
@@ -97,8 +98,16 @@
   <button id="listaBtn" class="fx" aria-expanded="false" aria-controls="lista">Playlist</button>
   <ol id="lista" class="lista" hidden></ol>
 </div>
+<div id="amb" class="amb" role="group" aria-label="Trilha sonora de fundo">
+  <button id="ambBtn" aria-pressed="false" aria-label="Ativar trilha sonora">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 010 7M18.5 6a8.5 8.5 0 010 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    <i class="ondas" aria-hidden="true"><b></b><b></b><b></b><b></b></i>
+  </button>
+  <input id="ambVol" type="range" min="0" max="1" step="0.01" value="0.12" aria-label="Volume da trilha sonora">
+</div>
 <script src="dados.js"></script>
 <script src="script.js"></script>
 <script src="abertura.js"></script>
+<script src="ambiente.js"></script>
 </body>
 </html>

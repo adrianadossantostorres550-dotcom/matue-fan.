@@ -78,12 +78,14 @@
       const iv = setInterval(() => { v -= .1; if (v <= 0){ clearInterval(iv); f.pause(); f.volume = 1; } else f.volume = v; }, 80);
     }
     intro.classList.add("fim"); marca();
-    setTimeout(() => { intro.style.display = "none"; document.documentElement.style.overflow = ""; }, rapido ? 450 : 800);
+    setTimeout(() => { intro.style.display = "none"; document.documentElement.style.overflow = "";
+      document.dispatchEvent(new Event("abertura:fim")); }, rapido ? 450 : 800);
   }
   function inicia(){
     timers.forEach(clearTimeout); timers = [];
     intro.classList.remove("play", "beat", "full", "fim", "espera"); void intro.offsetWidth;
     intro.style.display = ""; document.documentElement.style.overflow = "hidden";
+    document.dispatchEvent(new Event("abertura:inicio"));
     if (actx) master.gain.setTargetAtTime(1, actx.currentTime, .01);
     armado = false;
     if (actx && actx.state !== "running"){ actx.resume().catch(() => {}); armaToque(); }
