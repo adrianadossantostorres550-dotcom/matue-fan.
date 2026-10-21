@@ -82,22 +82,32 @@
   }
   function inicia(){
     timers.forEach(clearTimeout); timers = [];
-    document.getElementById("iEntrar").hidden = true;
     intro.classList.remove("play", "beat", "full", "fim", "espera"); void intro.offsetWidth;
     intro.style.display = ""; document.documentElement.style.overflow = "hidden";
     if (actx) master.gain.setTargetAtTime(1, actx.currentTime, .01);
-    if (faixa && faixaOk){ faixa.currentTime = MUSICA.inicio; faixa.volume = 1; faixa.muted = !som; faixa.play().catch(() => {}); }
+    armado = false;
+    if (actx && actx.state !== "running"){ actx.resume().catch(() => {}); armaToque(); }
+    if (faixa && faixaOk){ faixa.currentTime = MUSICA.inicio; faixa.volume = 1; faixa.muted = !som; faixa.play().catch(armaToque); }
     tam(); cria(); frag = []; vivo = true; t0 = ultimo = performance.now();
     intro.classList.add("play"); raf = requestAnimationFrame(desenha);
     timers.push(setTimeout(subida, T.reveal), setTimeout(estoura, T.beat), setTimeout(() => termina(false), T.fim));
   }
-  function aguardaToque(){                // som ainda bloqueado: pede um toque
-    intro.classList.add("espera"); document.documentElement.style.overflow = "hidden";
-    const b = document.getElementById("iEntrar"); b.hidden = false; b.focus();
-    b.onclick = () => { (actx ? actx.resume() : Promise.resolve()).then(inicia, inicia); };
+  // Se o navegador bloquear o som, ele começa no primeiro toque/clique/tecla (a música entra alinhada com a animação).
+  let armado = false;
+  function armaToque(){
+    if (armado) return; armado = true;
+    const ev = ["pointerdown", "keydown", "touchstart"];
+    const h = () => {
+      ev.forEach(x => removeEventListener(x, h, true));
+      if (!vivo) return;
+      if (actx) actx.resume().catch(() => {});
+      if (faixa && faixaOk && som && faixa.paused){
+        faixa.currentTime = MUSICA.inicio + (performance.now() - t0)/1000; faixa.muted = false; faixa.play().catch(() => {});
+      }
+    };
+    ev.forEach(x => addEventListener(x, h, true));
   }
 
-  document.getElementById("iPular").onclick = () => termina(true);
   document.getElementById("iSom").onclick = e => {
     som = !som; e.target.setAttribute("aria-pressed", som); e.target.textContent = "Som: " + (som ? "ligado" : "desligado");
     if (faixa) faixa.muted = !som;
@@ -111,7 +121,5 @@
   const pular = (typeof fx !== "undefined" && !fx) || matchMedia("(prefers-reduced-motion: reduce)").matches ||
     document.documentElement.classList.contains("semIntro");
   if (pular){ intro.style.display = "none"; return; }
-  Promise.race([document.fonts ? document.fonts.ready : espera(0), espera(1200)]).then(() => {
-    if (!actx || actx.state === "running") inicia(); else aguardaToque();
-  });
+  Promise.race([document.fonts ? document.fonts.ready : espera(0), espera(1200)]).then(inicia);
 })();
